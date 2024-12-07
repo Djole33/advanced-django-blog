@@ -1,0 +1,13 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+{% for one_category in all_categories %}
+
+<a href="{% url 'category' one_category.name %}">{{ one_category.name }}</a>
+
+<br />
+
+{% endfor %}
+
+{% endblock %}

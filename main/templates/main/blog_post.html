@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<h2>{{ single_post.heading }}</h2>
+<h5><a href="{% url 'category' single_post.category %}">{{ single_post.category }}</a>, {{ single_post.date }}</h5>
+<img src="{{ single_post.image.url }}" style="height:366px;width:550px;" />
+<br /><br />
+<h3>{{ single_post.description }}</h3>
+<br /><br /><br /><br />
+<h2>Comments:</h2>
+
+{% endblock %}
