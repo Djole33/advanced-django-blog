@@ -1,10 +1,6 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<div class="header">
-    <h2>Blog Name</h2>
-</div>
-
 <div class="row">
     <div class="leftcolumn">
         {% for oneblogpost in blogposts %}
@@ -20,6 +16,17 @@
             <p>{{ oneblogpost.description }}</p>
         </div>
         {% endfor %}
+        {% if blogposts.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ blogposts.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        Page: {{ blogposts.number }} of {{ blogposts.paginator.num_pages }} <br />
+
+        {% if blogposts.has_next %}
+        <a href="?page={{ blogposts.next_page_number }}">Next</a>
+        <a href="?page={{ blogposts.paginator.num_pages }}">Last</a>
+        {% endif %}
     </div>
     <div class="rightcolumn">
         <div class="card">
@@ -44,3 +51,7 @@
     <h2>Footer</h2>
 </div>
 {% endblock %}
+
+{% for oneblogpost in blogposts %}
+<h2>{{ oneblogpost.name }}</h2>
+{% endfor %}

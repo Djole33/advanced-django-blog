@@ -2,6 +2,35 @@
 
 {% block content %}
 
-{{one_category.name}}
+<h1>{{one_category.name}}</h1>
+
+<div class="row">
+    <div class="leftcolumn">
+        {% for post in category_posts %}
+        <div class="card">
+            <a href="{% url 'blog_post' post.id %}">
+                <h2>{{ post.heading }}</h2>
+            </a>
+            <h5><a href="{% url 'category' post.category %}">{{ post.category }}</a>, <a
+                    href="{% url 'blog_post' post.id %}">{{ post.date }}</a></h5>
+            <a href="{% url 'blog_post' post.id %}"><img src="{{ post.image.url }}"
+                    style="height:183px;width:275px;" /></a>
+            <br />
+            <p>{{ post.description }}</p>
+        </div>
+        {% endfor %}
+        {% if category_posts.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ category_posts.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        Page: {{ category_posts.number }} of {{ category_posts.paginator.num_pages }} <br />
+
+        {% if category_posts.has_next %}
+        <a href="?page={{ category_posts.next_page_number }}">Next</a>
+        <a href="?page={{ category_posts.paginator.num_pages }}">Last</a>
+        {% endif %}
+    </div>
+</div>
 
 {% endblock %}
