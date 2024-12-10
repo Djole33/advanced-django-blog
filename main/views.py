@@ -3,7 +3,7 @@ from .models import BlogPost, Category
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, CreateBlogPostForm
 from django.contrib.auth.models import User
 
 # Create your views here.
@@ -123,3 +123,23 @@ def update_password(request):
     else:
         messages.info(request, ('You need to be logged in first.'))
         return redirect('home')
+
+def create_blog_post(request):
+    form = CreateBlogPostForm()
+    if request.user.is_authenticated:
+        current_user = request.user
+        if request.method == "POST":
+            form = CreateBlogPostForm(current_user, request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, ('You have successfully made a new blog post!'))
+                return redirect('home')
+            else:
+                for error in list(form.errors.values()):
+                    messages.error(request, f'{error}')
+                    return redirect('home')    
+    else:
+        messages.info(request, ('You need to be logged in first.'))
+        return redirect('home')
+    
+    return render(request, 'main/create_blog_post.html', {'form': form})
