@@ -23,4 +23,5 @@ class BlogPost(models.Model):
     date = models.DateField(default=datetime.datetime.today)
 
     def __str__(self):
-        return self.name
+        return self.heading
+    

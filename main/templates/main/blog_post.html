@@ -6,6 +6,13 @@
 <img src="{{ single_post.image.url }}" style="height:366px;width:550px;" />
 <br /><br />
 <h3>{{ single_post.description }}</h3>
+<br /><br />
+<a href="{% url 'update_blog_post' single_post.pk %}" class="btn btn-info">Update</a>
+<br />
+<form action="{% url 'delete_blog_post' single_post.pk %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>
 <br /><br /><br /><br />
 <h2>Comments:</h2>
 

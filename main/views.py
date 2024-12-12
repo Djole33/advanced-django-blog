@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, CreateBlogPostForm
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -129,17 +130,58 @@ def create_blog_post(request):
     if request.user.is_authenticated:
         current_user = request.user
         if request.method == "POST":
-            form = CreateBlogPostForm(current_user, request.POST)
+            form = CreateBlogPostForm(request.POST, request.FILES)
             if form.is_valid():
+                form = form.save(commit=False)
+                form.user = current_user
                 form.save()
-                messages.success(request, ('You have successfully made a new blog post!'))
+                messages.success(request, 'You have successfully made a new blog post!')
                 return redirect('home')
             else:
                 for error in list(form.errors.values()):
                     messages.error(request, f'{error}')
-                    return redirect('home')    
+                    return redirect('home')
     else:
-        messages.info(request, ('You need to be logged in first.'))
+        messages.info(request, 'You need to be logged in first.')
+        return redirect('home')
+
+    return render(request, 'main/create_blog_post.html', {'form': form})
+
+def update_blog_post(request, pk):
+    blog_post = BlogPost.objects.get(id=pk)
+    if request.user == blog_post.user:
+        form = CreateBlogPostForm(instance=blog_post)
+        if request.user.is_authenticated:
+            if request.method == "POST":
+                form = CreateBlogPostForm(request.POST, request.FILES, instance=blog_post)
+                if form.is_valid():
+                    form.save()
+                    messages.success(request, 'You have successfully updated your blog post!')
+                    return redirect('home')
+                else:
+                    for error in list(form.errors.values()):
+                        messages.error(request, f'{error}')
+                        return redirect('home')
+        else:
+            messages.info(request, 'You need to be logged in first.')
+            return redirect('home')
+
+        return render(request, 'main/update_blog_post.html', {'form': form})
+    
+    else:
+        messages.info(request, "You didn't make this post.")
         return redirect('home')
     
-    return render(request, 'main/create_blog_post.html', {'form': form})
+def delete_blog_post(request, pk):
+    blog_post = get_object_or_404(BlogPost, id=pk)
+    if request.user == blog_post.user:
+        if request.method == "POST":
+            blog_post.delete()
+            messages.success(request, 'You have successfully deleted your blog post!')
+            return redirect('home')
+        else:
+            messages.info(request, 'You need to do that with a button!')
+            return redirect('home')
+    else:
+        messages.info(request, "You didn't make this post.")
+    return redirect('home')

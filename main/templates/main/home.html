@@ -8,8 +8,7 @@
             <a href="{% url 'blog_post' oneblogpost.id %}">
                 <h2>{{ oneblogpost.heading }}</h2>
             </a>
-            <h5><a href="{% url 'category' oneblogpost.category %}">{{ oneblogpost.category }}</a>, <a
-                    href="{% url 'blog_post' oneblogpost.id %}">{{ oneblogpost.date }}</a></h5>
+            <h5><a href="{% url 'category' oneblogpost.category %}">{{ oneblogpost.category }}</a>, {{ oneblogpost.date }}</h5>
             <a href="{% url 'blog_post' oneblogpost.id %}"><img src="{{ oneblogpost.image.url }}"
                     style="height:183px;width:275px;" /></a>
             <br />
