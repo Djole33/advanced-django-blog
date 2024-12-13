@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
 from django import forms
-from .models import BlogPost
+from .models import BlogPost, Comment
 
 class ChangePasswordForm(SetPasswordForm):
 	class Meta:
@@ -70,3 +70,8 @@ class CreateBlogPostForm(forms.ModelForm):
 	class Meta:
 		model = BlogPost
 		fields = ('heading', 'description', 'date', 'image', 'category')
+
+class AddCommentForm(forms.ModelForm):
+	class Meta:
+		model = Comment
+		fields = ("title", "body")

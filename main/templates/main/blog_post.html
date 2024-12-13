@@ -2,10 +2,11 @@
 
 {% block content %}
 <h2>{{ single_post.heading }}</h2>
-<h5><a href="{% url 'category' single_post.category %}">{{ single_post.category }}</a>, {{ single_post.date }}</h5>
+<h5><a href="{% url 'category' single_post.category %}">{{ single_post.category }}</a>, {{ single_post.date }}, By: {{ single_post.user }}</h5>
 <img src="{{ single_post.image.url }}" style="height:366px;width:550px;" />
 <br /><br />
 <h3>{{ single_post.description }}</h3>
+{% if user.is_authenticated and user.id == single_post.user.id %}
 <br /><br />
 <a href="{% url 'update_blog_post' single_post.pk %}" class="btn btn-info">Update</a>
 <br />
@@ -13,7 +14,33 @@
     {% csrf_token %}
     <button type="submit" class="btn btn-danger">Delete</button>
 </form>
+{% endif %}
 <br /><br /><br /><br />
 <h2>Comments:</h2>
+
+{% if not single_post.comments.all %}
+    No Coments Yet...
+    <a class="btn btn-info" href="{% url 'add_comment' single_post.pk %}">Add One</a>
+{% else %}
+    <a class="btn btn-info"  href="{% url 'add_comment' single_post.pk %}">Add One</a>
+    <br />
+    {% for comment in single_post.comments.all %}
+    <br />
+	<h5><strong>{{ comment.title }}</strong> -
+	{{ comment.date_added }} - By: {{ comment.user }}</h5>
+	{{ comment.body }}
+	<br /> <br />
+    {% endfor %}
+{% endif %}
+
+<!-- 
+
+I can do it like this also, but since I used related_name in models.py, it is a easier way to do everything in the BlogPost class
+
+{% for comment in comments %}
+{{ comment.title }}
+{% endfor %} 
+
+-->
 
 {% endblock %}

@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from .models import BlogPost, Category
+from .models import BlogPost, Category, Comment
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, CreateBlogPostForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, CreateBlogPostForm, AddCommentForm
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
@@ -25,7 +25,9 @@ def home(request):
 
 def blog_post(request, pk):
     single_post = BlogPost.objects.get(id=pk)
-    return render(request, 'main/blog_post.html', {'single_post': single_post})
+    # I can do it via Comment model, but since I used related_name in models.py, it is a easier way to do everything in the BlogPost class
+    # comments = Comment.objects.filter(blog_post=single_post.id)
+    return render(request, 'main/blog_post.html', {'single_post': single_post}) # 'comments': comments
 
 def categories(request):
     all_categories = Category.objects.all()
@@ -185,3 +187,27 @@ def delete_blog_post(request, pk):
     else:
         messages.info(request, "You didn't make this post.")
     return redirect('home')
+
+def add_comment(request, pk):
+    form = AddCommentForm()
+    commented_post = BlogPost.objects.get(id=pk)
+    if request.user.is_authenticated:
+        current_user = request.user
+        if request.method == "POST":
+            form = AddCommentForm(request.POST)
+            if form.is_valid():
+                form = form.save(commit=False)
+                form.user = current_user
+                form.blog_post = commented_post
+                form.save()
+                messages.success(request, 'You have successfully commented!')
+                return redirect('blog_post', pk=pk)
+            else:
+                for error in list(form.errors.values()):
+                    messages.error(request, f'{error}')
+                    return redirect('home')
+    else:
+        messages.info(request, 'You need to be logged in first.')
+        return redirect('home')
+
+    return render(request, 'main/add_comment.html', {'form': form})
