@@ -6,6 +6,8 @@ from django.contrib import messages
 from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, CreateBlogPostForm, AddCommentForm
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 # Create your views here.
 
@@ -211,3 +213,26 @@ def add_comment(request, pk):
         return redirect('home')
 
     return render(request, 'main/add_comment.html', {'form': form})
+
+def like_post(request, pk):
+    liked_post = get_object_or_404(BlogPost, id=pk)
+    liked_post.is_liked = False
+    if request.user.is_authenticated:
+        current_user = request.user
+        if request.method == "POST":    
+            if liked_post.likes.filter(id=current_user.id).exists():
+                liked_post.likes.remove(current_user)
+                liked_post.is_liked = False
+                liked_post.save()
+                messages.error(request, 'You disliked this blog post!')
+            else:
+                liked_post.likes.add(current_user)
+                liked_post.is_liked = True
+                liked_post.save()
+                messages.success(request, 'You liked this blog post!')
+            return redirect(reverse('blog_post', args=[pk]))
+    else:
+        messages.info(request, 'You need to be logged in first.')
+        return redirect('blog_post', pk=pk)
+    
+    return HttpResponseRedirect(reverse('blog_post', args=[int(pk)]))

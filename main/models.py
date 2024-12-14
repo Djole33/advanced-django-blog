@@ -23,10 +23,14 @@ class BlogPost(models.Model):
     description = models.CharField(max_length=250, default="", blank=True, null=True)
     image = models.ImageField(upload_to="images/")
     date = models.DateField(default=datetime.datetime.today)
+    likes = models.ManyToManyField(User, related_name="blog_posts")
+    is_liked = models.BooleanField(default=False)
 
     def __str__(self):
         return self.heading
 
+    def total_likes(self):
+        return self.likes.count()
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -39,3 +43,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.blog_post.heading} - {self.title}"
+

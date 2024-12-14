@@ -2,11 +2,26 @@
 
 {% block content %}
 <h2>{{ single_post.heading }}</h2>
-<h5><a href="{% url 'category' single_post.category %}">{{ single_post.category }}</a>, {{ single_post.date }}, By: {{ single_post.user }}</h5>
+<h5><a href="{% url 'category' single_post.category %}">{{ single_post.category }}</a>, {{ single_post.date }},
+    By: {{ single_post.user }}</h5>
 <img src="{{ single_post.image.url }}" style="height:366px;width:550px;" />
 <br /><br />
 <h3>{{ single_post.description }}</h3>
+
+<br /><br />
+
+<form action="{% url 'like_post' single_post.pk %}" method="POST">
+    {% csrf_token %}
+    {% if single_post.is_liked == True %}
+    <button type="submit" name="post_id" value="{{ single_post.id }}" class="btn btn-danger btn-sm">Dislike</button>
+    {% else %}
+    <button type="submit" name="post_id" value="{{ single_post.id }}" class="btn btn-primary btn-sm">Like</button>
+    {% endif %}
+    - {{ single_post.total_likes }} Likes
+</form>
+
 {% if user.is_authenticated and user.id == single_post.user.id %}
+
 <br /><br />
 <a href="{% url 'update_blog_post' single_post.pk %}" class="btn btn-info">Update</a>
 <br />
@@ -15,22 +30,25 @@
     <button type="submit" class="btn btn-danger">Delete</button>
 </form>
 {% endif %}
+
 <br /><br /><br /><br />
+
 <h2>Comments:</h2>
 
+
 {% if not single_post.comments.all %}
-    No Coments Yet...
-    <a class="btn btn-info" href="{% url 'add_comment' single_post.pk %}">Add One</a>
+No Coments Yet...
+<a class="btn btn-info" href="{% url 'add_comment' single_post.pk %}">Add One</a>
 {% else %}
-    <a class="btn btn-info"  href="{% url 'add_comment' single_post.pk %}">Add One</a>
-    <br />
-    {% for comment in single_post.comments.all %}
-    <br />
-	<h5><strong>{{ comment.title }}</strong> -
-	{{ comment.date_added }} - By: {{ comment.user }}</h5>
-	{{ comment.body }}
-	<br /> <br />
-    {% endfor %}
+<a class="btn btn-info" href="{% url 'add_comment' single_post.pk %}">Add One</a>
+<br />
+{% for comment in single_post.comments.all %}
+<br />
+<h5><strong>{{ comment.title }}</strong> -
+    {{ comment.date_added }} - By: {{ comment.user }}</h5>
+{{ comment.body }}
+<br /> <br />
+{% endfor %}
 {% endif %}
 
 <!-- 
