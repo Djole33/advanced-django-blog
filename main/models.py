@@ -1,7 +1,8 @@
 from django.db import models
-from django.db.models.signals import post_save
 import datetime
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -21,7 +22,7 @@ class BlogPost(models.Model):
     heading = models.CharField(max_length=300)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.CharField(max_length=250, default="", blank=True, null=True)
-    image = models.ImageField(upload_to="images/")
+    image = models.ImageField(upload_to="images/post_image")
     date = models.DateField(default=datetime.datetime.today)
     likes = models.ManyToManyField(User, related_name="blog_posts")
     is_liked = models.BooleanField(default=False)
@@ -44,3 +45,27 @@ class Comment(models.Model):
     def __str__(self):
         return f"{self.blog_post.heading} - {self.title}"
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    image = models.ImageField(upload_to="images/profile_p/", default='images/profile_p/default.png')
+    biography = models.TextField(blank=True)
+    followers = models.ManyToManyField(User, related_name="followers", null=True)
+
+    def __str__(self):
+        return str(self.user)
+
+    def save(self, *args, **kwargs):
+        if not self.biography and self.user:
+            self.biography = f"I am {self.user.username}"
+        super().save(*args, **kwargs)
+
+# Signal to create a Profile when a User is registered
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+# Optional: Signal to save Profile when User is saved
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()

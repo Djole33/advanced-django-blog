@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import BlogPost, Category, Comment
+from .models import BlogPost, Category, Comment, Profile
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -29,7 +29,10 @@ def blog_post(request, pk):
     single_post = BlogPost.objects.get(id=pk)
     # I can do it via Comment model, but since I used related_name in models.py, it is a easier way to do everything in the BlogPost class
     # comments = Comment.objects.filter(blog_post=single_post.id)
-    return render(request, 'main/blog_post.html', {'single_post': single_post}) # 'comments': comments
+    ''' comments_len = len(single_post.comments.all()) I can also count length of comments in views.py and pass it in HTML, 
+    but since I used related_name in models.py, it is a easier way to do everything in the BlogPost class '''
+    
+    return render(request, 'main/blog_post.html', {'single_post': single_post}) # 'comments': comments, 'comments_len':comments_len
 
 def categories(request):
     all_categories = Category.objects.all()
@@ -236,3 +239,8 @@ def like_post(request, pk):
         return redirect('blog_post', pk=pk)
     
     return HttpResponseRedirect(reverse('blog_post', args=[int(pk)]))
+
+def user_profile(request, username):
+    user = get_object_or_404(User, username=username)
+    profile = get_object_or_404(Profile, user=user)
+    return render(request, 'main/user_profile.html', {'profile': profile})

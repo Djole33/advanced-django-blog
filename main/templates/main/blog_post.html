@@ -33,8 +33,10 @@
 
 <br /><br /><br /><br />
 
-<h2>Comments:</h2>
+<h2>Comments{% if single_post.comments.all %} - {{ single_post.comments.all|length }}{% endif %}:</h2>
 
+<!-- {{comments_len}} I can also count length of comments in views.py and pass it here, but since I used related_name in models.py, 
+it is a easier way to do everything in the BlogPost class -->
 
 {% if not single_post.comments.all %}
 No Coments Yet...

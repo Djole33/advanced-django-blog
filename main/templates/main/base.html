@@ -52,6 +52,7 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'update_user' %}">User Profile</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'create_blog_post' %}">Create Blog Post</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user_profile' user.username %}">User Profile</a></li>
                     {% else %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
