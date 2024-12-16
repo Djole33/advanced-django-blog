@@ -2,16 +2,31 @@
 
 {% block content %}
 <div class="row">
-    <img src="{{ profile.image.url }}" style="max-height:300px;max-width:300px;" />
-    <br /><br />
-    <span>Username : {{ profile.user }}</span>
-    <br /><br />
-    <span>First Name : {{ profile.user.first_name }}</span>
-    <br /><br />
-    <span>Last Name : {{ profile.user.last_name }}</span>
-    <br /><br />
-    <span>Biography : {{ profile.biography }}</span>
-    <br /><br />
+    <div class="col-md-8">
+        <img src="{{ profile.image.url }}" style="max-height:300px;max-width:300px;" />
+        <br /><br />
+        <span>Username : {{ profile.user }}</span>
+        <br /><br />
+        <span>First Name : {{ profile.user.first_name }}</span>
+        <br /><br />
+        <span>Last Name : {{ profile.user.last_name }}</span>
+        <br /><br />
+        <span>Biography : {{ profile.biography }}</span>
+        <br /><br />
+        {% if user.is_authenticated and user.id != profile.user.id %}
+        <form action="{% url 'follow_profile' profile.user.username %}" method="POST">
+            {% csrf_token %}
+            {% if profile.is_followed == True %}
+            <button type="submit" name="profile_username" value="{{ profile.username }}" class="btn btn-danger btn-sm">Unfollow</button>
+            {% else %}
+            <button type="submit" name="profile_username" value="{{ profile.username }}" class="btn btn-primary btn-sm">Follow</button>
+            {% endif %}
+            - {{ profile.total_followers }} Followers
+        </form>
+        {% else %}
+        <div style="width: 200px;height: 30px;background-color: rgb(19, 186, 195);display: grid;place-items: center;">{{ profile.total_followers }} Followers</div>
+        {% endif %}
+    </div>
 </div>
 
 <div class="footer">

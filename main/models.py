@@ -22,7 +22,7 @@ class BlogPost(models.Model):
     heading = models.CharField(max_length=300)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.CharField(max_length=250, default="", blank=True, null=True)
-    image = models.ImageField(upload_to="images/post_image")
+    image = models.ImageField(upload_to="images/")
     date = models.DateField(default=datetime.datetime.today)
     likes = models.ManyToManyField(User, related_name="blog_posts")
     is_liked = models.BooleanField(default=False)
@@ -50,14 +50,19 @@ class Profile(models.Model):
     image = models.ImageField(upload_to="images/profile_p/", default='images/profile_p/default.png')
     biography = models.TextField(blank=True)
     followers = models.ManyToManyField(User, related_name="followers", null=True)
+    is_followed = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.user)
-
+    
     def save(self, *args, **kwargs):
         if not self.biography and self.user:
             self.biography = f"I am {self.user.username}"
         super().save(*args, **kwargs)
+
+    def total_followers(self):
+        return self.followers.count()
+
 
 # Signal to create a Profile when a User is registered
 @receiver(post_save, sender=User)

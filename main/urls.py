@@ -16,5 +16,6 @@ urlpatterns = [
     path('delete_blog_post/<int:pk>', views.delete_blog_post, name="delete_blog_post"),
     path('add_comment/<int:pk>/', views.add_comment, name="add_comment"),
     path('like_post/<int:pk>', views.like_post, name="like_post"),
-    path('user_profile/<str:username>', views.user_profile, name="user_profile"),
+    path('user_profile/<str:username>/', views.user_profile, name="user_profile"),
+    path('follow_profile/<str:username>/', views.follow_profile, name="follow_profile"),
 ]

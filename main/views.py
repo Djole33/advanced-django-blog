@@ -233,14 +233,40 @@ def like_post(request, pk):
                 liked_post.is_liked = True
                 liked_post.save()
                 messages.success(request, 'You liked this blog post!')
-            return redirect(reverse('blog_post', args=[pk]))
+            return redirect(reverse('blog_post', args=[int(pk)]))
+        else:
+            messages.info(request, 'You need to do that with a button!')
+            return redirect(reverse('blog_post', args=[int(pk)]))
     else:
         messages.info(request, 'You need to be logged in first.')
         return redirect('blog_post', pk=pk)
-    
-    return HttpResponseRedirect(reverse('blog_post', args=[int(pk)]))
 
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
     profile = get_object_or_404(Profile, user=user)
     return render(request, 'main/user_profile.html', {'profile': profile})
+
+def follow_profile(request, username):
+    followed_user = get_object_or_404(User, username=username)
+    profile = get_object_or_404(Profile, user=followed_user)
+    profile.is_liked = False
+    if request.user.is_authenticated:
+        current_user = request.user
+        if request.method == "POST":    
+            if profile.followers.filter(id=current_user.id).exists():
+                profile.followers.remove(current_user)
+                profile.is_followed = False
+                profile.save()
+                messages.error(request, 'You unfollowed this profile!')
+            else:
+                profile.followers.add(current_user)
+                profile.is_followed = True
+                profile.save()
+                messages.success(request, 'You followed this profile!')
+            return redirect(reverse('user_profile', args=[username]))
+        else:
+            messages.info(request, 'You need to do that with a button!')
+            return redirect(reverse('user_profile', args=[username]))
+    else:
+        messages.info(request, 'You need to be logged in first.')
+        return redirect('user_profile', username=username)
