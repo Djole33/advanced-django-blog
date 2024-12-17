@@ -49,7 +49,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     image = models.ImageField(upload_to="images/profile_p/", default='images/profile_p/default.png')
     biography = models.TextField(blank=True)
-    followers = models.ManyToManyField(User, related_name="followers", null=True)
+    followers = models.ManyToManyField(User, related_name="followers", blank=True)
     is_followed = models.BooleanField(default=False)
 
     def __str__(self):
@@ -74,3 +74,12 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+class Badge(models.Model):
+    profile = models.ManyToManyField(Profile, blank=True, related_name='badges')
+    image = models.ImageField(upload_to="images/badges/")
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return str(self.title)

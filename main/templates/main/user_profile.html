@@ -17,15 +17,36 @@
         <form action="{% url 'follow_profile' profile.user.username %}" method="POST">
             {% csrf_token %}
             {% if profile.is_followed == True %}
-            <button type="submit" name="profile_username" value="{{ profile.username }}" class="btn btn-danger btn-sm">Unfollow</button>
+            <button type="submit" name="profile_username" value="{{ profile.username }}"
+                class="btn btn-danger btn-sm">Unfollow</button>
             {% else %}
-            <button type="submit" name="profile_username" value="{{ profile.username }}" class="btn btn-primary btn-sm">Follow</button>
+            <button type="submit" name="profile_username" value="{{ profile.username }}"
+                class="btn btn-primary btn-sm">Follow</button>
             {% endif %}
             - {{ profile.total_followers }} Followers
         </form>
         {% else %}
-        <div style="width: 200px;height: 30px;background-color: rgb(19, 186, 195);display: grid;place-items: center;">{{ profile.total_followers }} Followers</div>
+        <div style="width: 200px;height: 30px;background-color: rgb(19, 186, 195);display: grid;place-items: center;">
+            {{profile.total_followers }} Followers</div>
         {% endif %}
+
+        <br />
+        <h2>Badges{% if profile.badges.all %} - {{ profile.badges.all|length }}{% endif %}:</h2>
+
+        {% if profile.badges.all %}
+        <div class="big" style="max-height:250px;max-width:250px;display: flex;justify-content: start;align-items: start;">
+        {% for badge in profile.badges.all %}
+            <div class="container" style="text-align: center;display: grid;place-items: start;">
+                <img src="{{ badge.image.url }}" style="max-height:150px;max-width:150px;" />
+                <br />
+                <h5><strong>{{ badge.title }}</strong> <br />
+                    {{ badge.description }}</h5>
+                <br /> <br />
+            </div>
+        {% endfor %}
+        </div>
+        {% endif %}
+
     </div>
 </div>
 

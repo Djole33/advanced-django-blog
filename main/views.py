@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import BlogPost, Category, Comment, Profile
+from .models import BlogPost, Category, Comment, Profile, Badge
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -244,6 +244,17 @@ def like_post(request, pk):
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
     profile = get_object_or_404(Profile, user=user)
+    
+    if profile.total_followers() >= 1:
+        follower_badge = Badge.objects.get(title="1 Follower")
+        profile.badges.add(follower_badge)
+
+    posts = BlogPost.objects.filter(user=user)
+
+    if len(posts) >= 1:
+        blog_badge = Badge.objects.get(title='1 Blog Post')
+        profile.badges.add(blog_badge)
+
     return render(request, 'main/user_profile.html', {'profile': profile})
 
 def follow_profile(request, username):
